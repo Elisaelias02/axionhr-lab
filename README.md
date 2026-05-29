@@ -248,7 +248,6 @@ axionhr-lab/
 │   └── Dockerfile
 ├── frontend/
 │   └── index.html          # Dashboard SaaS
-├── attack.py               # Script de ataque automatizado
 ├── docker-compose.yml
 └── README.md
 ```
