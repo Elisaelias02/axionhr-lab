@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AxionHR — Plataforma de Recursos Humanos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #06080f;
+      --bg2:      #0b0f1c;
+      --bg3:      #0f1525;
+      --bg4:      #141b2e;
+      --border:   #1c2540;
+      --border2:  #242f4e;
+      --text:     #e2e8f8;
+      --text2:    #7888aa;
+      --text3:    #3d4d6e;
+      --accent:   #4f8eff;
+      --accent2:  #2563eb;
+      --green:    #10d98a;
+      --green-bg: rgba(16,217,138,.07);
+      --amber:    #f59e0b;
+      --amber-bg: rgba(245,158,11,.07);
+      --red:      #f43f5e;
+      --red-bg:   rgba(244,63,94,.07);
+      --purple:   #a78bfa;
+      --radius:   8px;
+      --font:     'IBM Plex Sans', sans-serif;
+      --display:  'Syne', sans-serif;
+      --mono:     'IBM Plex Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────── */
+    .sidebar {
+      width: 220px;
+      min-height: 100vh;
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      flex-shrink: 0;
+    }
+
+    .logo {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 13px;
+      color: #fff;
+      flex-shrink: 0;
+    }
+
+    .logo-text {
+      font-family: var(--display);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -.3px;
+      color: var(--text);
+    }
+
+    .logo-text span { color: var(--accent); }
+
+    nav { padding: 12px 10px; flex: 1; }
+
+    .nav-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text3);
+      padding: 10px 10px 5px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .15s;
+      margin-bottom: 1px;
+      font-weight: 400;
+    }
+
+    .nav-item:hover { background: var(--bg3); color: var(--text); }
+    .nav-item.active { background: rgba(79,142,255,.1); color: var(--accent); font-weight: 500; }
+
+    .nav-item svg { flex-shrink: 0; opacity: .7; }
+
+    .sidebar-footer {
+      padding: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .user-chip {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      background: var(--bg3);
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--purple));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .user-name { font-size: 12px; font-weight: 500; }
+    .user-role { font-size: 10px; color: var(--text3); margin-top: 1px; }
+
+    /* ── Main ────────────────────────────────────────── */
+    .main { margin-left: 220px; flex: 1; display: flex; flex-direction: column; }
+
+    .topbar {
+      height: 56px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      gap: 12px;
+      background: var(--bg);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .topbar-title {
+      font-family: var(--display);
+      font-size: 14px;
+      font-weight: 600;
+      flex: 1;
+      color: var(--text);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 500;
+      font-family: var(--font);
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+    }
+
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-ghost { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+    .btn-ghost:hover { background: var(--bg3); color: var(--text); }
+
+    .page { padding: 28px; }
+
+    /* ── KPI grid ────────────────────────────────────── */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+
+    .kpi-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+    }
+
+    .kpi-card.blue::after  { background: linear-gradient(90deg, var(--accent), transparent); }
+    .kpi-card.green::after { background: linear-gradient(90deg, var(--green), transparent); }
+    .kpi-card.amber::after { background: linear-gradient(90deg, var(--amber), transparent); }
+    .kpi-card.purple::after { background: linear-gradient(90deg, var(--purple), transparent); }
+
+    .kpi-label { font-size: 10px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+    .kpi-value { font-family: var(--display); font-size: 24px; font-weight: 700; letter-spacing: -.5px; line-height: 1; margin-bottom: 6px; }
+    .kpi-sub { font-size: 11px; color: var(--text3); }
+
+    /* ── Content grid ────────────────────────────────── */
+    .content-grid { display: grid; grid-template-columns: 1fr 300px; gap: 18px; }
+
+    /* ── Panel ───────────────────────────────────────── */
+    .panel {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-title { font-family: var(--display); font-size: 13px; font-weight: 600; }
+    .panel-action { font-size: 11.5px; color: var(--accent); cursor: pointer; }
+
+    /* ── Table ───────────────────────────────────────── */
+    table { width: 100%; border-collapse: collapse; }
+
+    thead th {
+      padding: 10px 20px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .7px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+    }
+
+    tbody tr { border-bottom: 1px solid var(--border); transition: background .1s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(255,255,255,.015); }
+    td { padding: 12px 20px; font-size: 12.5px; }
+
+    .td-name { font-weight: 500; }
+    .td-mono { font-family: var(--mono); font-size: 11px; color: var(--text2); }
+    .td-id { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    .badge::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+    .badge-green  { background: var(--green-bg);  color: var(--green); }
+    .badge-amber  { background: var(--amber-bg);  color: var(--amber); }
+    .badge-red    { background: var(--red-bg);    color: var(--red); }
+
+    /* ── Mi expediente panel ─────────────────────────── */
+    .exp-item {
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .exp-item:last-child { border-bottom: none; }
+    .exp-key { font-size: 11px; color: var(--text3); font-weight: 500; text-transform: uppercase; letter-spacing: .4px; }
+    .exp-val { font-family: var(--mono); font-size: 12px; color: var(--text); }
+
+    /* ── Login ───────────────────────────────────────── */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .login-wrap {
+      display: flex;
+      flex-direction: row;
+      width: 860px;
+      max-width: 96vw;
+      min-height: 520px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .login-left, .login-right {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .login-left {
+      background: linear-gradient(135deg, #0d1530 0%, #0b1228 100%);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-left::before {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(79,142,255,.08) 0%, transparent 70%);
+      top: -50px; right: -50px;
+      border-radius: 50%;
+    }
+
+    .login-tagline {
+      font-family: var(--display);
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .login-tagline span { color: var(--accent); }
+
+    .login-desc {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    .login-features { margin-top: 32px; }
+
+    .login-feat {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      color: var(--text2);
+      margin-bottom: 10px;
+    }
+
+    .login-feat-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .login-right {
+      background: var(--bg2);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .login-title { font-family: var(--display); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .login-sub { font-size: 12.5px; color: var(--text2); margin-bottom: 28px; }
+
+    .field { margin-bottom: 14px; }
+
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--text2); margin-bottom: 6px; letter-spacing: .3px; text-transform: uppercase; }
+
+    .field input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: var(--text);
+      font-family: var(--font);
+      outline: none;
+      transition: border .15s;
+    }
+
+    .field input:focus { border-color: var(--accent); }
+
+    .login-btn {
+      width: 100%;
+      padding: 11px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-weight: 600;
+      font-family: var(--display);
+      cursor: pointer;
+      margin-top: 6px;
+      letter-spacing: .3px;
+      transition: background .15s;
+    }
+
+    .login-btn:hover { background: var(--accent2); }
+
+    .login-toggle {
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    .login-toggle span { color: var(--accent); cursor: pointer; font-weight: 500; }
+
+    /* ── Register form ───────────────────────────────── */
+    #registerForm { display: none; }
+
+    /* ── Notif ───────────────────────────────────────── */
+    .notif {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 12.5px;
+      max-width: 300px;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5);
+      z-index: 200;
+      transform: translateY(60px);
+      opacity: 0;
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    .notif.show { transform: translateY(0); opacity: 1; }
+    .notif-title { font-weight: 600; margin-bottom: 2px; }
+    .notif-body { color: var(--text2); font-size: 11.5px; }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══════════════════════════════════════════════════ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-wrap">
+    <div class="login-left">
+      <div>
+        <div class="logo" style="padding:0;border:none;margin-bottom:32px">
+          <div class="logo-icon">AX</div>
+          <span class="logo-text">Axion<span>HR</span></span>
+        </div>
+        <div class="login-tagline">Gestión de talento<br><span>sin fricciones.</span></div>
+        <div class="login-desc">Plataforma SaaS de Recursos Humanos para empresas en México y LATAM.</div>
+        <div class="login-features">
+          <div class="login-feat"><div class="login-feat-dot"></div>Expedientes digitales con CURP y NSS</div>
+          <div class="login-feat"><div class="login-feat-dot"></div>Gestión de nómina y CFDI</div>
+          <div class="login-feat"><div class="login-feat-dot"></div>Multi-tenant enterprise</div>
+          <div class="login-feat"><div class="login-feat-dot"></div>API REST documentada</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--text3)">© 2026 AxionHR Operadora S.A.P.I. — Todos los derechos reservados</div>
+    </div>
+
+    <div class="login-right">
+      <!-- Login form -->
+      <div id="loginForm">
+        <div class="login-title">Bienvenido</div>
+        <div class="login-sub">Inicia sesión con tu cuenta corporativa</div>
+        <div class="field">
+          <label>Correo corporativo</label>
+          <input type="email" id="emailInput" placeholder="usuario@empresa.com">
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" id="passInput" placeholder="••••••••">
+        </div>
+        <button class="login-btn" onclick="doLogin()">Iniciar sesión</button>
+        <div class="login-toggle">¿Primera vez? <span onclick="toggleForm()">Regístrate aquí</span></div>
+      </div>
+
+      <!-- Register form -->
+      <div id="registerForm">
+        <div class="login-title">Crear cuenta</div>
+        <div class="login-sub">Registra tu acceso de empleado</div>
+        <div class="field">
+          <label>Nombre completo</label>
+          <input type="text" id="regNombre" placeholder="Nombre Apellido Apellido">
+        </div>
+        <div class="field">
+          <label>Código de empresa (RFC)</label>
+          <input type="text" id="regTenant" placeholder="RFC de tu empresa" style="font-family:var(--mono)">
+        </div>
+        <div class="field">
+          <label>CURP</label>
+          <input type="text" id="regCurp" placeholder="XXXX000000XXXXXXXX" style="font-family:var(--mono)">
+        </div>
+        <div class="field">
+          <label>NSS (IMSS)</label>
+          <input type="text" id="regNss" placeholder="00000000000" style="font-family:var(--mono)">
+        </div>
+        <div class="field">
+          <label>Correo</label>
+          <input type="email" id="regEmail" placeholder="usuario@empresa.com">
+        </div>
+        <div class="field">
+          <label>Contraseña</label>
+          <input type="password" id="regPass" placeholder="••••••••">
+        </div>
+        <button class="login-btn" onclick="doRegistro()">Crear cuenta</button>
+        <div class="login-toggle">¿Ya tienes cuenta? <span onclick="toggleForm()">Inicia sesión</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ APP ═════════════════════════════════════════════════════ -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">AX</div>
+    <span class="logo-text">Axion<span>HR</span></span>
+  </div>
+  <nav>
+    <div class="nav-label">Principal</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('expediente', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Mi Expediente
+    </div>
+    <div class="nav-item" onclick="showPage('equipo', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      Equipo
+    </div>
+    <div class="nav-label">Sistema</div>
+    <div class="nav-item" onclick="showPage('api', this)">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+      API / Docs
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="user-chip">
+      <div class="avatar" id="avatarEl">--</div>
+      <div>
+        <div class="user-name" id="userNameEl">Cargando...</div>
+        <div class="user-role" id="userRoleEl">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <span class="topbar-title" id="pageTitle">Dashboard</span>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" onclick="refreshPage()">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        Actualizar
+      </button>
+      <button class="btn btn-primary" onclick="showNotif('AxionHR','Funcionalidad disponible en plan Pro o superior.')">
+        + Nuevo empleado
+      </button>
+    </div>
+  </div>
+
+  <!-- Dashboard -->
+  <div class="page" id="page-dashboard">
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-label">Empleados activos</div>
+        <div class="kpi-value" id="kpiEmpleados">—</div>
+        <div class="kpi-sub" id="kpiPlan">Plan basico</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-label">Mi puesto</div>
+        <div class="kpi-value" style="font-size:14px;line-height:1.4" id="kpiPuesto">—</div>
+        <div class="kpi-sub" id="kpiDepto">—</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-label">Mi empleado ID</div>
+        <div class="kpi-value" style="font-family:var(--mono);font-size:10px;line-height:1.6;color:var(--amber)" id="kpiEmpId">—</div>
+        <div class="kpi-sub">UUID asignado al registro</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-label">Empresa</div>
+        <div class="kpi-value" style="font-size:12px;line-height:1.4" id="kpiEmpresa">—</div>
+        <div class="kpi-sub" id="kpiTenantId" style="font-family:var(--mono);font-size:9px"></div>
+      </div>
+    </div>
+
+    <div class="content-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Directorio del equipo</span>
+          <span class="panel-action" onclick="showPage('equipo', null)">Ver todos →</span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Empleado</th>
+              <th>Puesto</th>
+              <th>Departamento</th>
+              <th>Ingreso</th>
+              <th>Estatus</th>
+            </tr>
+          </thead>
+          <tbody id="dirTableBody">
+            <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Cargando...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Mi acceso rápido</span>
+        </div>
+        <div id="quickAccess" style="padding:8px 0">
+          <div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mi Expediente -->
+  <div class="page" id="page-expediente" style="display:none">
+    <div style="max-width:600px">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Mi Expediente Laboral</span>
+        </div>
+        <div id="expContent" style="padding:8px 0">
+          <div style="padding:20px;text-align:center;color:var(--text3);font-size:12px">Cargando...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Equipo -->
+  <div class="page" id="page-equipo" style="display:none">
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Empleados del tenant</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>CURP</th>
+            <th>NSS</th>
+            <th>Puesto</th>
+            <th>Salario</th>
+          </tr>
+        </thead>
+        <tbody id="equipoTableBody">
+          <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px">Acceso restringido — se requiere rol hr_admin</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- API -->
+  <div class="page" id="page-api" style="display:none">
+    <div class="panel">
+      <div class="panel-header"><span class="panel-title">API / Documentación</span></div>
+      <div style="padding:24px">
+        <p style="color:var(--text2);font-size:13px;margin-bottom:16px;line-height:1.6">API REST v3 de AxionHR. Autenticación via JWT Bearer token.</p>
+        <a href="http://localhost:5000/docs/" target="_blank" class="btn btn-primary" style="text-decoration:none;display:inline-flex">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Abrir Swagger UI
+        </a>
+        <div style="margin-top:20px;background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:14px">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">JWT activo</div>
+          <div id="tokenDisplay" style="font-family:var(--mono);font-size:10px;color:var(--text2);word-break:break-all;line-height:1.7">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="notif" id="notif">
+  <div class="notif-title" id="notifTitle"></div>
+  <div class="notif-body" id="notifBody"></div>
+</div>
+
+<script>
+const API = 'http://localhost:5000/api/v1';
+let token = null, currentUser = null;
+
+function fmt(n) { return new Intl.NumberFormat('es-MX',{style:'currency',currency:'MXN'}).format(n); }
+
+function showNotif(title, body) {
+  document.getElementById('notifTitle').textContent = title;
+  document.getElementById('notifBody').textContent = body;
+  const el = document.getElementById('notif');
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function showPage(page, el) {
+  ['dashboard','expediente','equipo','api'].forEach(p => {
+    document.getElementById('page-'+p).style.display = p===page ? '' : 'none';
+  });
+  document.querySelectorAll('.nav-item').forEach(e => e.classList.remove('active'));
+  if (el) el.classList.add('active');
+  const titles = {dashboard:'Dashboard', expediente:'Mi Expediente', equipo:'Equipo', api:'API / Docs'};
+  document.getElementById('pageTitle').textContent = titles[page] || page;
+  if (page === 'expediente') loadExpediente();
+  if (page === 'api') document.getElementById('tokenDisplay').textContent = token || '—';
+  if (page === 'equipo') loadEquipo();
+}
+
+function refreshPage() { loadDashboard(); showNotif('AxionHR', 'Datos actualizados.'); }
+
+function toggleForm() {
+  const lf = document.getElementById('loginForm');
+  const rf = document.getElementById('registerForm');
+  const isLogin = lf.style.display !== 'none';
+  lf.style.display = isLogin ? 'none' : '';
+  rf.style.display = isLogin ? '' : 'none';
+}
+
+async function doLogin() {
+  const r = await fetch(`${API}/auth/login`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({
+      email: document.getElementById('emailInput').value,
+      password: document.getElementById('passInput').value
+    })
+  });
+  const d = await r.json();
+  if (!r.ok) { showNotif('Error', d.error || 'Credenciales inválidas'); return; }
+  initApp(d.token, d.usuario);
+}
+
+async function doRegistro() {
+  const payload = {
+    nombre:       document.getElementById('regNombre').value,
+    tenant_code:  document.getElementById('regTenant').value,
+    curp:         document.getElementById('regCurp').value,
+    nss:          document.getElementById('regNss').value,
+    email:        document.getElementById('regEmail').value,
+    password:     document.getElementById('regPass').value,
+  };
+  const r = await fetch(`${API}/auth/registro`, {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  const d = await r.json();
+  if (!r.ok) { showNotif('Error', d.error || 'No se pudo registrar'); return; }
+  const fakeUser = {
+    id: d.empleado.id,
+    nombre: d.empleado.nombre,
+    rol: 'empleado',
+    tenant_id: d.empleado.tenant_id,
+    empleado_id: d.empleado.id
+  };
+  initApp(d.token, fakeUser);
+}
+
+function initApp(t, user) {
+  token = t;
+  currentUser = user;
+  document.getElementById('loginScreen').style.display = 'none';
+  const n = user.nombre.split(' ');
+  document.getElementById('avatarEl').textContent = (n[0][0]+(n[1]?.[0]||'')).toUpperCase();
+  document.getElementById('userNameEl').textContent = user.nombre;
+  const roles = {empleado:'Empleado', hr_admin:'HR Admin', super_admin:'Super Admin'};
+  document.getElementById('userRoleEl').textContent = roles[user.rol] || user.rol;
+  loadDashboard();
+}
+
+async function loadDashboard() {
+  const auth = {Authorization: `Bearer ${token}`};
+  try {
+    const r = await fetch(`${API}/dashboard`, {headers: auth});
+    const d = await r.json();
+
+    document.getElementById('kpiEmpleados').textContent = d.tenant?.empleados || '—';
+    document.getElementById('kpiPlan').textContent = `Plan ${d.tenant?.plan || '—'}`;
+    document.getElementById('kpiEmpresa').textContent = d.tenant?.nombre || '—';
+    document.getElementById('kpiTenantId').textContent = currentUser?.tenant_id || '';
+
+    if (d.mi_perfil) {
+      document.getElementById('kpiPuesto').textContent = d.mi_perfil.puesto || '—';
+      document.getElementById('kpiEmpId').textContent = d.mi_perfil.empleado_id || '—';
+    }
+
+    // Directorio
+    if (currentUser?.empleado_id) {
+      const r2 = await fetch(`${API}/empleados/${currentUser.empleado_id}`, {headers: auth});
+      if (r2.ok) {
+        const emp = await r2.json();
+        loadDirectorio(emp.tenant_id, auth);
+        loadQuickAccess(emp, auth);
+      }
+    }
+  } catch(e) {
+    showNotif('Error de conexión', 'Verifica que el backend esté corriendo en :5000');
+  }
+}
+
+async function loadDirectorio(tenant_id, auth) {
+  try {
+    const r = await fetch(`${API}/tenant/${tenant_id}/empleados`, {headers: auth});
+    const tbody = document.getElementById('dirTableBody');
+    if (!r.ok) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;font-size:12px">Directorio disponible para HR Admin</td></tr>';
+      return;
+    }
+    const d = await r.json();
+    tbody.innerHTML = d.empleados.map(e => `<tr>
+      <td class="td-name">${e.nombre} ${e.apellido_paterno}</td>
+      <td style="color:var(--text2);font-size:12px">${e.puesto}</td>
+      <td style="color:var(--text3);font-size:11px">${e.departamento||'—'}</td>
+      <td style="color:var(--text3);font-size:11px">${e.fecha_ingreso||'—'}</td>
+      <td><span class="badge badge-green">Activo</span></td>
+    </tr>`).join('');
+  } catch(e) {}
+}
+
+async function loadQuickAccess(emp, auth) {
+  document.getElementById('quickAccess').innerHTML = `
+    <div class="exp-item"><span class="exp-key">CURP</span><span class="exp-val">${emp.curp}</span></div>
+    <div class="exp-item"><span class="exp-key">NSS</span><span class="exp-val">${emp.nss}</span></div>
+    <div class="exp-item"><span class="exp-key">Puesto</span><span class="exp-val">${emp.puesto}</span></div>
+    <div class="exp-item"><span class="exp-key">Ingreso</span><span class="exp-val">${emp.fecha_ingreso}</span></div>
+    <div class="exp-item"><span class="exp-key">Estatus</span><span class="exp-val"><span class="badge badge-green">${emp.estatus}</span></span></div>
+  `;
+}
+
+async function loadExpediente() {
+  if (!currentUser?.empleado_id) return;
+  const auth = {Authorization: `Bearer ${token}`};
+  const r = await fetch(`${API}/empleados/${currentUser.empleado_id}/expediente`, {headers: auth});
+  if (!r.ok) return;
+  const d = await r.json();
+  const e = d.empleado, l = d.datos_laborales, b = d.datos_bancarios, p = d.datos_personales;
+
+  document.getElementById('expContent').innerHTML = `
+    <div style="padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border)">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Identificación</div>
+    </div>
+    ${[['Nombre completo',e.nombre_completo],['CURP',e.curp],['NSS',e.nss],['RFC',e.rfc],['Puesto',e.puesto]].map(([k,v])=>`
+    <div class="exp-item"><span class="exp-key">${k}</span><span class="exp-val">${v||'—'}</span></div>`).join('')}
+    <div style="padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border);border-top:1px solid var(--border);margin-top:4px">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Datos laborales</div>
+    </div>
+    ${[['Salario mensual',fmt(l.salario_mensual)],['Tipo contrato',l.tipo_contrato],['Fecha contrato',l.fecha_contrato]].map(([k,v])=>`
+    <div class="exp-item"><span class="exp-key">${k}</span><span class="exp-val">${v||'—'}</span></div>`).join('')}
+    <div style="padding:12px 20px;background:var(--bg3);border-bottom:1px solid var(--border);border-top:1px solid var(--border);margin-top:4px">
+      <div style="font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Datos bancarios</div>
+    </div>
+    ${[['Banco',b.banco],['CLABE',b.clabe],['Núm. IMSS',b.num_imss]].map(([k,v])=>`
+    <div class="exp-item"><span class="exp-key">${k}</span><span class="exp-val">${v||'—'}</span></div>`).join('')}
+  `;
+}
+
+async function loadEquipo() {
+  const auth = {Authorization: `Bearer ${token}`};
+  const tbody = document.getElementById('equipoTableBody');
+  if (!currentUser?.tenant_id) return;
+  const r = await fetch(`${API}/tenant/${currentUser.tenant_id}/empleados`, {headers: auth});
+  if (!r.ok) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;font-size:12px">Acceso restringido — se requiere rol hr_admin</td></tr>';
+    return;
+  }
+  const d = await r.json();
+  tbody.innerHTML = d.empleados.map(e => `<tr>
+    <td class="td-name">${e.nombre} ${e.apellido_paterno}</td>
+    <td class="td-mono">${e.curp}</td>
+    <td class="td-mono">${e.nss}</td>
+    <td style="font-size:12px;color:var(--text2)">${e.puesto}</td>
+    <td style="font-family:var(--mono);font-size:12px">${fmt(e.salario_mensual)}</td>
+  </tr>`).join('');
+}
+
+document.getElementById('passInput').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
+</script>
+</body>
+</html>
