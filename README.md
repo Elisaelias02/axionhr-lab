@@ -1,4 +1,4 @@
-# AxionHR — Vulnerable Lab
+# AxionHR — Lab Vulnerable
 
 > **Lab educativo** de seguridad en APIs  
 > Creado por **Elisa Elias** — [@Cinn4mor0ll](https://youtube.com/@Cinn4mor0ll)
