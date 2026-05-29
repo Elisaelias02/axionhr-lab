@@ -1,0 +1,17 @@
+# Base de datos — se genera automáticamente al arrancar
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# Logs
+*.log
+nohup.out
+
+# OS
+.DS_Store
+Thumbs.db
